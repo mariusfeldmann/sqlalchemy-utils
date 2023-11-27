@@ -79,7 +79,8 @@ def create_materialized_view(
     selectable,
     metadata,
     indexes=None,
-    aliases=None
+    aliases=None,
+    replace=False,
 ):
     """ Create a view on a given metadata
 
@@ -108,7 +109,7 @@ def create_materialized_view(
     sa.event.listen(
         metadata,
         'after_create',
-        CreateView(name, selectable, materialized=True)
+        CreateView(name, selectable, materialized=True, replace=replace)
     )
 
     @sa.event.listens_for(metadata, 'after_create')
