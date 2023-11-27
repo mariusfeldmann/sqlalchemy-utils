@@ -18,7 +18,7 @@ class CreateView(DDLElement):
 
 @compiler.compiles(CreateView)
 def compile_create_materialized_view(element, compiler, **kw):
-    return 'CREATE {}{}VIEW {} AS {}'.format(
+    return 'CREATE {}{}VIEW IF NOT EXISTS {} AS {}'.format(
         'OR REPLACE ' if element.replace else '',
         'MATERIALIZED ' if element.materialized else '',
         compiler.dialect.identifier_preparer.quote(element.name),
@@ -79,8 +79,7 @@ def create_materialized_view(
     selectable,
     metadata,
     indexes=None,
-    aliases=None,
-    replace=False,
+    aliases=None
 ):
     """ Create a view on a given metadata
 
@@ -109,7 +108,7 @@ def create_materialized_view(
     sa.event.listen(
         metadata,
         'after_create',
-        CreateView(name, selectable, materialized=True, replace=replace)
+        CreateView(name, selectable, materialized=True)
     )
 
     @sa.event.listens_for(metadata, 'after_create')
